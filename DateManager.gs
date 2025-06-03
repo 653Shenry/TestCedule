@@ -6,11 +6,38 @@ class DateManager {
     return ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   }
   
-  static estJourOuvrable(date) {
-    if (!date) return false;
-    const jour = date.getDay();
-    return jour !== 0 && jour !== 6;
+static formatDate(date) {
+    if (!date) return '';
+    
+    const jour = String(date.getDate()).padStart(2, '0');
+    const mois = String(date.getMonth() + 1).padStart(2, '0');
+    const annee = date.getFullYear();
+    
+    return `${jour}/${mois}/${annee}`;
   }
+
+ static ajouterHeuresOuvrables(date, heures) {
+    let resultat = new Date(date);
+    let heuresAjoutees = 0;
+    while (heuresAjoutees < heures) {
+      resultat.setTime(resultat.getTime() + 60 * 60 * 1000); // Ajoute 1 heure
+      if (this.estJourOuvrable(resultat) && this.estHeureOuvrable(resultat)) {
+        heuresAjoutees++;
+      }
+    }
+    return resultat;
+  }
+
+  static estJourOuvrable(date) {
+    const jour = date.getDay();
+    return jour >= 1 && jour <= 5; // Du lundi (1) au vendredi (5)
+  }
+
+  static estHeureOuvrable(date) {
+    const heure = date.getHours();
+    return heure >= 9 && heure < 17; // De 9h à 17h
+  }
+  
 
   static estEnVacances(ressource, date, vacances) {
     if (!ressource || !date || !vacances || !vacances[ressource]) return false;
